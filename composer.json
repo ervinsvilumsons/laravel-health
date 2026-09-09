@@ -1,0 +1,77 @@
+{
+    "name": "ervinsvilumsons/laravel-health",
+    "description": "Laravel Health is a package that provides an easy way to check failed services in Laravel applications.",
+    "keywords": [
+        "ervinsvilumsons",
+        "laravel",
+        "laravel-health"
+    ],
+    "homepage": "https://github.com/ervinsvilumsons/laravel-health",
+    "license": "MIT",
+    "type": "library",
+    "authors": [
+        {
+            "name": "ervinsvilumsons",
+            "email": "ervins.vilumsons@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^8.3",
+        "react/async": "^4.3",
+        "react/promise": "^3.3",
+        "react/socket": "^1.17"
+    },
+    "require-dev": {
+        "laravel/pint": "^1.30",
+        "orchestra/testbench": "^11.2",
+        "pestphp/pest": "^5",
+        "phpstan/phpstan": "^2.2",
+        "rector/rector": "^2.6"
+    },
+    "autoload": {
+        "psr-4": {
+            "ErvinsVilumsons\\LaravelHealth\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "ErvinsVilumsons\\LaravelHealth\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "prepare": "@php vendor/bin/testbench package:discover --ansi",
+        "analyse": "@php vendor/bin/phpstan analyse src tests --level=10",
+        "format": "@php vendor/bin/pint",
+        "format:test": "@php vendor/bin/pint --test",
+        "refactor": "@php vendor/bin/rector",
+        "refactor:test": "@php vendor/bin/rector --dry-run",
+        "test": "@php vendor/bin/pest",
+        "test:coverage": "XDEBUG_MODE=develop,coverage php vendor/bin/pest --coverage --coverage-clover=coverage.xml --min=80",
+        "check": [
+            "@composer audit",
+            "@composer validate --strict",
+            "@format:test",
+            "@refactor:test",
+            "@analyse",
+            "@test:coverage"
+        ]
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true,
+            "phpstan/extension-installer": true
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "ErvinsVilumsons\\LaravelHealth\\HealthManagerServiceProvider"
+            ],
+            "aliases": {
+                "AlertManager": "ErvinsVilumsons\\LaravelHealth\\Facades\\HealthManager"
+            }
+        }
+    },
+    "prefer-stable": true
+}

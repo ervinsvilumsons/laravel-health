@@ -1,0 +1,13 @@
+<?php
+
+namespace App\Listeners;
+
+use Illuminate\Queue\Events\JobFailed;
+
+class HandleFailedJob
+{
+    public function handle(JobFailed $event): void
+    {
+        //
+    }
+}

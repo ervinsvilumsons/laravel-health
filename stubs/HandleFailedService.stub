@@ -1,0 +1,13 @@
+<?php
+
+namespace App\Listeners;
+
+use ErvinsVilumsons\LaravelHealth\Events\ServiceFailed;
+
+class HandleFailedService
+{
+    public function handle(ServiceFailed $event): void
+    {
+        //
+    }
+}
