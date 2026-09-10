@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace ErvinsVilumsons\LaravelHealth\Services;
 
 use ErvinsVilumsons\LaravelHealth\Contracts\HealthServiceContract;
-use ErvinsVilumsons\LaravelHealth\Events\ServiceFailed;
 use Illuminate\Support\Facades\Config;
 use React\Promise\PromiseInterface;
 
@@ -29,7 +28,7 @@ abstract class HealthService implements HealthServiceContract
 
     abstract public function name(): string;
 
-    abstract public function connection(): string;
+    abstract public function connection(): mixed;
 
     public function status(): string
     {
@@ -69,13 +68,6 @@ abstract class HealthService implements HealthServiceContract
                 function (\Throwable $e): void {
                     $this->status = self::STATUS_DOWN;
                     $this->message = "{$this->name()} service failed: {$e->getMessage()}";
-
-                    ServiceFailed::dispatch(
-                        service: $this->name(),
-                        message: $this->message,
-                        context: [],
-                        level: 'error',
-                    );
                 }
             )->then(
                 function () use ($start): void {

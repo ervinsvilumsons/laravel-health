@@ -29,7 +29,7 @@ class TestHealthService extends HealthService
         return $this->serviceName;
     }
 
-    public function connection(): string
+    public function connection(): mixed
     {
         return 'test';
     }

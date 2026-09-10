@@ -130,7 +130,7 @@ class BillingService extends HealthService
         return 'Billing';
     }
 
-    public function connection(): string
+    public function connection(): mixed
     {
         return Config::string('health-manager.services.billing.connection');
     }

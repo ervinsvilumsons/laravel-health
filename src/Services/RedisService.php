@@ -25,7 +25,7 @@ class RedisService extends HealthService
         return 'Redis';
     }
 
-    public function connection(): string
+    public function connection(): mixed
     {
         return Config::string('health-manager.services.redis.connection');
     }
