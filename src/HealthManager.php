@@ -78,12 +78,13 @@ class HealthManager
             $context[$failedService->name()] = $failedService->message();
         }
 
-        $failedServicesNames = $failedServices
-            |> (fn ($services): array => array_map(
+        $failedServicesNames = implode(
+            '_',
+            array_map(
                 fn ($service): string => strtolower($service->name()),
-                $services,
-            ))
-            |> (fn ($names): string => implode(', ', $names));
+                $failedServices,
+            ),
+        );
 
         if (! empty($context)) {
             ServiceFailed::dispatch(
