@@ -52,7 +52,7 @@ The package registers its service provider through Laravel package discovery. Th
 GET /health
 ```
 
-The default response uses JSON:API-style `data.attributes` fields:
+The default response uses [JSON:API-style](https://jsonapi.org/) `data.attributes` fields:
 
 ```json
 {
@@ -160,7 +160,7 @@ Register it in `config/health-manager.php`:
 
 ### Failure Handling
 
-A failed `checkAsync()` promise does not make the whole report fail. The individual service is marked `down`, and a `ServiceFailed` event is dispatched. Response messages are only included when `health-manager.response.include_details` is enabled.
+A failed `checkAsync()` promise does not make the whole report fail. If one of services is marked `down`, a `ServiceFailed` event is dispatched. Response messages are only included when `health-manager.response.include_details` is enabled.
 
 Then customize `app/Listeners/HandleFailedService.php` to send alerts, log metadata, or notify an incident system:
 
@@ -177,19 +177,14 @@ class HandleFailedService
     public function handle(ServiceFailed $event): void
     {
         Log::error('Health check failed', [
-            'service' => $event->service,
+            'title' => $event->title,
             'message' => $event->message,
             'context' => $event->context,
+            'level' => $event->level,
         ]);
     }
 }
 ```
-
-### Monitoring Usage
-
-Use `/health` for load balancer or container readiness checks. For uptime monitoring, expose the endpoint through your monitoring network and alert when a service has status `down`.
-
-For a public endpoint, consider adding authentication or network restrictions. The endpoint can include dependency names, connection labels, and failure messages when debug details are enabled.
 
 ## ⚖️ License
 

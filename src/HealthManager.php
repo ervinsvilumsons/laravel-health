@@ -78,9 +78,17 @@ class HealthManager
             $context[$failedService->name()] = $failedService->message();
         }
 
+        $failedServicesNames = $failedServices
+            |> (fn ($services): array => array_map(
+                fn ($service): string => strtolower($service->name()),
+                $services,
+            ))
+            |> (fn ($names): string => implode(', ', $names));
+
         if (! empty($context)) {
             ServiceFailed::dispatch(
-                service: 'Service Alert',
+                key: $failedServicesNames,
+                title: 'Service Alert',
                 message: 'Following services are down:',
                 context: $context,
                 level: 'error',
