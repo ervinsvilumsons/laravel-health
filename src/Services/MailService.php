@@ -25,7 +25,7 @@ class MailService extends HealthService
         return 'Mail';
     }
 
-    public function connection(): string
+    public function connection(): ?string
     {
         return Config::string('health-manager.services.mail.connection');
     }

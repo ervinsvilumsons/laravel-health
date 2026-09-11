@@ -26,7 +26,7 @@ class DatabaseService extends HealthService
         return 'Database';
     }
 
-    public function connection(): string
+    public function connection(): mixed
     {
         return Config::string('health-manager.services.database.connection');
     }

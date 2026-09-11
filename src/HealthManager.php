@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ErvinsVilumsons\LaravelHealth;
 
+use ErvinsVilumsons\LaravelHealth\Events\ServiceFailed;
 use ErvinsVilumsons\LaravelHealth\Http\Resources\HealthResource;
 use ErvinsVilumsons\LaravelHealth\Services\HealthService;
 use Illuminate\Support\Carbon;
@@ -18,11 +19,16 @@ class HealthManager
     /** @var array<string, array{enabled?: bool, class: class-string, dependency?: string}> */
     public array $configuredServices = [];
 
+    /** @var array<int, HealthService> */
+    public array $healthServices = [];
+
     public function __construct()
     {
         /** @var array<string, array{enabled?: bool, class: class-string, dependency?: string}> $configuredServices */
         $configuredServices = Config::array('health-manager.services', []);
         $this->configuredServices = $configuredServices;
+
+        $this->healthServices = [];
     }
 
     /**
@@ -30,19 +36,17 @@ class HealthManager
      */
     private function getServices(): array
     {
-        /** @var array<int, HealthService> $healthServices */
-        $healthServices = [];
-
-        $this->handleIndepententServices($healthServices);
-
-        $this->handleDepententServices($healthServices);
+        $this
+            ->handleIndepententServices()
+            ->handleDepententServices()
+            ->handleFailedServices();
 
         usort(
-            $healthServices,
+            $this->healthServices,
             self::compareServices(...),
         );
 
-        return $healthServices;
+        return $this->healthServices;
     }
 
     /**
@@ -62,10 +66,38 @@ class HealthManager
         ];
     }
 
-    /**
-     * @param  array<int, HealthService>  $healthServices
-     */
-    private function handleIndepententServices(array &$healthServices): void
+    private function handleFailedServices(): void
+    {
+        $context = [];
+        $failedServices = array_filter(
+            $this->healthServices,
+            fn ($service): bool => $service->status() === HealthService::STATUS_DOWN,
+        );
+
+        foreach ($failedServices as $failedService) {
+            $context[$failedService->name()] = $failedService->message();
+        }
+
+        $failedServicesNames = implode(
+            '_',
+            array_map(
+                fn ($service): string => strtolower($service->name()),
+                $failedServices,
+            ),
+        );
+
+        if (! empty($context)) {
+            ServiceFailed::dispatch(
+                key: $failedServicesNames,
+                title: 'Service Alert',
+                message: 'Following services are down:',
+                context: $context,
+                level: 'error',
+            );
+        }
+    }
+
+    private function handleIndepententServices(): self
     {
         /** @var array<int, PromiseInterface<void>> $promises */
         $promises = [];
@@ -78,17 +110,16 @@ class HealthManager
 
         foreach ($independentServices as $serviceConfig) {
             $service = $this->makeService($serviceConfig);
-            $healthServices[] = $service;
+            $this->healthServices[] = $service;
             $promises[] = $service->statusAsync();
         }
 
         await(all($promises));
+
+        return $this;
     }
 
-    /**
-     * @param  array<int, HealthService>  $healthServices
-     */
-    private function handleDepententServices(array &$healthServices): void
+    private function handleDepententServices(): self
     {
         /** @var array<int, PromiseInterface<void>> $promises */
         $promises = [];
@@ -107,7 +138,7 @@ class HealthManager
 
             foreach ($pending as $name) {
                 $serviceConfig = $dependentServices[$name];
-                $parentService = collect($healthServices)->first(fn ($service): bool => strtolower($service->name()) === strtolower($serviceConfig['dependency']));
+                $parentService = collect($this->healthServices)->first(fn ($service): bool => strtolower($service->name()) === strtolower($serviceConfig['dependency']));
 
                 // Dependency hasn't completed yet.
                 if ($parentService === null) {
@@ -122,7 +153,7 @@ class HealthManager
                     $service->skip($parentService->message() ?? "Dependency {$parentService->name()} is unavailable.");
                 }
 
-                $healthServices[] = $service;
+                $this->healthServices[] = $service;
 
                 unset($pending[array_search($name, $pending, true)]);
 
@@ -138,6 +169,8 @@ class HealthManager
                 break;
             }
         }
+
+        return $this;
     }
 
     /**

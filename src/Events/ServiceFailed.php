@@ -17,7 +17,8 @@ class ServiceFailed extends Event
      * @param  array<string, mixed>  $context
      */
     public function __construct(
-        public string $service,
+        public string $key,
+        public string $title,
         public string $message,
         public array $context,
         public string $level,

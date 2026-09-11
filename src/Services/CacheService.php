@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ErvinsVilumsons\LaravelHealth\Services;
 
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use React\Promise\PromiseInterface;
 
@@ -16,9 +17,9 @@ class CacheService extends HealthService
         return 'Cache';
     }
 
-    public function connection(): string
+    public function connection(): mixed
     {
-        return Config::string('health-manager.services.cache.connection');
+        return Config::get('health-manager.services.cache.connection');
     }
 
     /**
@@ -26,6 +27,8 @@ class CacheService extends HealthService
      */
     public function checkAsync(): PromiseInterface
     {
-        return resolve(null)->then(static function (): void {});
+        return resolve(null)->then(static function (): void {
+            Cache::get('health-manager:check');
+        });
     }
 }

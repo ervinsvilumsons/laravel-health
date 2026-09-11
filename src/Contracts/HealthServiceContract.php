@@ -23,7 +23,7 @@ interface HealthServiceContract
 
     public function name(): string;
 
-    public function connection(): string;
+    public function connection(): mixed;
 
     public function status(): ?string;
 
