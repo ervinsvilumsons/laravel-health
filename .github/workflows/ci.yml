@@ -46,7 +46,7 @@ jobs:
       - name: Install dependencies
         run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
-      - name: Run tests with quality & coverage
+      - name: Run tests
         if: matrix.os != env.OS_COVERAGE
         run: composer test
 
