@@ -32,7 +32,15 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: dom, curl, fileinfo, libxml, mbstring, zip
+          extensions: >
+            dom,
+            curl,
+            fileinfo,
+            libxml,
+            mbstring,
+            pdo_sqlite,
+            sqlite3,
+            zip
           coverage: xdebug
       
       - name: Install dependencies
