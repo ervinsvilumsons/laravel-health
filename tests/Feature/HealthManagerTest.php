@@ -11,6 +11,18 @@ use Illuminate\Support\Facades\Config;
 
 class HealthManagerTest extends TestCase
 {
+    private string $path;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $prefix = 'api';
+        $path = trim(Config::string('health-manager.route.path'), '/');
+
+        $this->path = "/{$prefix}/{$path}";
+    }
+
     public function test_report_contains_no_services_when_all_services_are_disabled(): void
     {
         config()->set('health-manager.services', [
@@ -20,7 +32,7 @@ class HealthManagerTest extends TestCase
             ],
         ]);
 
-        $response = $this->getJson(Config::string('health-manager.route.path'));
+        $response = $this->getJson($this->path);
 
         $response->assertOk();
         self::assertSame([], $response->json('data.attributes.services'));
@@ -41,7 +53,7 @@ class HealthManagerTest extends TestCase
             ],
         ]);
 
-        $response = $this->getJson(Config::string('health-manager.route.path'));
+        $response = $this->getJson($this->path);
 
         $response->assertOk();
         $response->assertJsonFragment([
@@ -96,7 +108,7 @@ class HealthManagerTest extends TestCase
             ],
         ]);
 
-        $response = $this->getJson(Config::string('health-manager.route.path'));
+        $response = $this->getJson($this->path);
 
         $response->assertOk();
         /** @var array<int, array<string, mixed>> $services */
@@ -119,7 +131,7 @@ class HealthManagerTest extends TestCase
             ],
         ]);
 
-        $response = $this->getJson(Config::string('health-manager.route.path'));
+        $response = $this->getJson($this->path);
 
         $response->assertOk();
         $response->assertJsonFragment([
@@ -143,7 +155,7 @@ class HealthManagerTest extends TestCase
             ],
         ]);
 
-        $response = $this->getJson(Config::string('health-manager.route.path'));
+        $response = $this->getJson($this->path);
 
         $response->assertOk();
         /** @var array<int, array<string, mixed>> $services */

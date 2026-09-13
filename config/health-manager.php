@@ -10,11 +10,17 @@ return [
 
     'route' => [
         'path' => env('HEALTH_PATH', '/health'),
-        'name' => 'health',
+        'name' => 'health.check',
+    ],
+
+    'event' => [
+        'title' => 'Service Alert',
+        'message' => 'Following services are down:',
+        'level' => 'error',
     ],
 
     'response' => [
-        'service_timeout' => 2,
+        'service_timeout' => 1,
         'include_details' => env('HEALTH_DEBUG', false),
     ],
 

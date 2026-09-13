@@ -28,7 +28,7 @@ class CacheService extends HealthService
     public function checkAsync(): PromiseInterface
     {
         return resolve(null)->then(static function (): void {
-            Cache::get('health-manager:check');
+            Cache::get('health:cache-check');
         });
     }
 }

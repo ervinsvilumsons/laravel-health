@@ -49,7 +49,7 @@ Enable a built-in service in `config/health-manager.php`:
 The package registers its service provider through Laravel package discovery. The health endpoint is available at:
 
 ```text
-GET /health
+GET /api/health
 ```
 
 The default response uses [JSON:API-style](https://jsonapi.org/) `data.attributes` fields:
@@ -84,8 +84,19 @@ return [
         'name' => 'health',
     ],
 
+    'throttle' => [
+        'max_attempts' => 30,
+        'decay_seconds' => 60,
+    ],
+
+    'event' => [
+        'title' => 'Service Alert',
+        'message' => 'Following services are down:',
+        'level' => 'error',
+    ],
+
     'response' => [
-        'service_timeout' => 2,
+        'service_timeout' => 1,
         'include_details' => env('HEALTH_DEBUG', false),
     ],
 
