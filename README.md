@@ -81,12 +81,13 @@ The default response uses [JSON:API-style](https://jsonapi.org/) `data.attribute
 return [
     'route' => [
         'path' => env('HEALTH_PATH', '/health'),
-        'name' => 'health',
+        'name' => 'health.check',
     ],
 
     'throttle' => [
         'max_attempts' => 30,
         'decay_seconds' => 60,
+        'path' => storage_path('framework/health-rate-limit'),
     ],
 
     'event' => [
@@ -98,6 +99,10 @@ return [
     'response' => [
         'service_timeout' => 1,
         'include_details' => env('HEALTH_DEBUG', false),
+    ],
+
+    'schedule' => [
+        'prune_rate_limits' => true,
     ],
 
     'services' => [
@@ -195,6 +200,55 @@ class HandleFailedService
         ]);
     }
 }
+```
+
+## 🛡️ Rate Limiting
+
+The health endpoint is rate limited per client IP by default. Limits are configured under health-manager.throttle:
+
+```php
+'throttle' => [
+    'max_attempts' => 30,
+    'decay_seconds' => 60,
+    'path' => storage_path('framework/health-rate-limit'),
+],
+```
+
+| Option | Description |
+| --- | --- |
+| max_attempts | Maximum number of requests allowed within the decay window. |
+| decay_seconds | Length of the rate-limit window, in seconds. |
+
+State is stored as JSON files under `storage/framework/health-rate-limit/` — one file per hashed key. No cache or database table is required, so the limiter works even when the cache backend itself is unhealthy.
+
+When a client exceeds the limit, the endpoint returns `429 Too Many Requests` with a `Retry-After` header indicating how many seconds remain until the window resets.
+
+Set `max_attempts` to `0` to disable throttling entirely (every request is allowed).
+
+## 🧹 Console Commands
+
+### health:prune-rate-limits
+
+Removes rate-limiter state files whose decay window has already expired. Invalid, empty, or malformed state files are also removed.
+
+```bash
+php artisan health:prune-rate-limits
+```
+
+The command is registered automatically and scheduled hourly by the package's service provider. You do not need to wire anything into app/Console/Kernel.php or routes/console.php.
+
+Sample output:
+
+```text
+Pruned 4 expired rate limiter file(s), kept 12.
+```
+
+If you prefer to control the schedule yourself, disable it in config/health-manager.php:
+
+```php
+'schedule' => [
+    'prune_rate_limits' => false,
+],
 ```
 
 ## ⚖️ License

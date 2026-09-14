@@ -22,6 +22,7 @@
         "react/socket": "^1.17"
     },
     "require-dev": {
+        "brianium/paratest": "^7.24",
         "laravel/pint": "^1.30",
         "orchestra/testbench": "^11.2",
         "pestphp/pest": "^5",
@@ -45,8 +46,8 @@
         "format:test": "@php vendor/bin/pint --test",
         "refactor": "@php vendor/bin/rector",
         "refactor:test": "@php vendor/bin/rector --dry-run",
-        "test": "@php vendor/bin/pest",
-        "test:coverage": "XDEBUG_MODE=develop,coverage php vendor/bin/pest --coverage --coverage-clover=coverage.xml --min=80",
+        "test": "@php vendor/bin/pest --parallel",
+        "test:coverage": "XDEBUG_MODE=develop,coverage php vendor/bin/pest --parallel --coverage --coverage-clover=coverage.xml --min=80",
         "check": [
             "@composer audit",
             "@composer validate --strict",

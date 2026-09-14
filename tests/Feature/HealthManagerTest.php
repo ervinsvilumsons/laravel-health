@@ -4,9 +4,11 @@ namespace ErvinsVilumsons\LaravelHealth\Tests\Feature;
 
 use ErvinsVilumsons\LaravelHealth\HealthManager;
 use ErvinsVilumsons\LaravelHealth\Services\DatabaseService;
+use ErvinsVilumsons\LaravelHealth\Support\RateLimiter;
 use ErvinsVilumsons\LaravelHealth\Tests\Support\FailingHealthService;
 use ErvinsVilumsons\LaravelHealth\Tests\Support\PassingHealthService;
 use ErvinsVilumsons\LaravelHealth\Tests\TestCase;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Config;
 
 class HealthManagerTest extends TestCase
@@ -168,5 +170,23 @@ class HealthManagerTest extends TestCase
         $method = new \ReflectionMethod(HealthManager::class, 'compareServices');
 
         self::assertSame(0, $method->invoke(null, new \stdClass, new \stdClass));
+    }
+
+    public function test_rate_limit(): void
+    {
+        config()->set('health-manager.throttle.max_attempts', 2);
+        config()->set('health-manager.services', []);
+
+        $rateLimiter = app(RateLimiter::class);
+        $rateLimiter->clear('127.0.0.1');
+
+        $this->getJson($this->path)->assertOk();
+        $this->getJson($this->path)->assertOk();
+
+        $this->getJson($this->path)
+            ->assertStatus(Response::HTTP_TOO_MANY_REQUESTS)
+            ->assertJson([
+                'message' => 'Too Many Requests',
+            ]);
     }
 }

@@ -13,6 +13,12 @@ return [
         'name' => 'health.check',
     ],
 
+    'throttle' => [
+        'max_attempts' => 30,
+        'decay_seconds' => 60,
+        'path' => storage_path('framework/health-rate-limit'),
+    ],
+
     'event' => [
         'title' => 'Service Alert',
         'message' => 'Following services are down:',
@@ -22,6 +28,10 @@ return [
     'response' => [
         'service_timeout' => 1,
         'include_details' => env('HEALTH_DEBUG', false),
+    ],
+
+    'schedule' => [
+        'prune_rate_limits' => true,
     ],
 
     'services' => [
