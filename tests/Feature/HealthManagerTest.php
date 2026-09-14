@@ -4,13 +4,27 @@ namespace ErvinsVilumsons\LaravelHealth\Tests\Feature;
 
 use ErvinsVilumsons\LaravelHealth\HealthManager;
 use ErvinsVilumsons\LaravelHealth\Services\DatabaseService;
+use ErvinsVilumsons\LaravelHealth\Support\RateLimiter;
 use ErvinsVilumsons\LaravelHealth\Tests\Support\FailingHealthService;
 use ErvinsVilumsons\LaravelHealth\Tests\Support\PassingHealthService;
 use ErvinsVilumsons\LaravelHealth\Tests\TestCase;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Config;
 
 class HealthManagerTest extends TestCase
 {
+    private string $path;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $prefix = 'api';
+        $path = trim(Config::string('health-manager.route.path'), '/');
+
+        $this->path = "/{$prefix}/{$path}";
+    }
+
     public function test_report_contains_no_services_when_all_services_are_disabled(): void
     {
         config()->set('health-manager.services', [
@@ -20,7 +34,7 @@ class HealthManagerTest extends TestCase
             ],
         ]);
 
-        $response = $this->getJson(Config::string('health-manager.route.path'));
+        $response = $this->getJson($this->path);
 
         $response->assertOk();
         self::assertSame([], $response->json('data.attributes.services'));
@@ -41,7 +55,7 @@ class HealthManagerTest extends TestCase
             ],
         ]);
 
-        $response = $this->getJson(Config::string('health-manager.route.path'));
+        $response = $this->getJson($this->path);
 
         $response->assertOk();
         $response->assertJsonFragment([
@@ -96,7 +110,7 @@ class HealthManagerTest extends TestCase
             ],
         ]);
 
-        $response = $this->getJson(Config::string('health-manager.route.path'));
+        $response = $this->getJson($this->path);
 
         $response->assertOk();
         /** @var array<int, array<string, mixed>> $services */
@@ -119,7 +133,7 @@ class HealthManagerTest extends TestCase
             ],
         ]);
 
-        $response = $this->getJson(Config::string('health-manager.route.path'));
+        $response = $this->getJson($this->path);
 
         $response->assertOk();
         $response->assertJsonFragment([
@@ -143,7 +157,7 @@ class HealthManagerTest extends TestCase
             ],
         ]);
 
-        $response = $this->getJson(Config::string('health-manager.route.path'));
+        $response = $this->getJson($this->path);
 
         $response->assertOk();
         /** @var array<int, array<string, mixed>> $services */
@@ -156,5 +170,23 @@ class HealthManagerTest extends TestCase
         $method = new \ReflectionMethod(HealthManager::class, 'compareServices');
 
         self::assertSame(0, $method->invoke(null, new \stdClass, new \stdClass));
+    }
+
+    public function test_rate_limit(): void
+    {
+        config()->set('health-manager.throttle.max_attempts', 2);
+        config()->set('health-manager.services', []);
+
+        $rateLimiter = app(RateLimiter::class);
+        $rateLimiter->clear('127.0.0.1');
+
+        $this->getJson($this->path)->assertOk();
+        $this->getJson($this->path)->assertOk();
+
+        $this->getJson($this->path)
+            ->assertStatus(Response::HTTP_TOO_MANY_REQUESTS)
+            ->assertJson([
+                'message' => 'Too Many Requests',
+            ]);
     }
 }

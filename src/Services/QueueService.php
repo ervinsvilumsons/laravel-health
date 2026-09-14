@@ -19,10 +19,7 @@ class QueueService extends HealthService
 
     public function connection(): mixed
     {
-        /** @var string|null $connection */
-        $connection = Config::get('health-manager.services.queue.connection');
-
-        return is_string($connection) ? $connection : null;
+        return Config::string('health-manager.services.queue.connection');
     }
 
     /**

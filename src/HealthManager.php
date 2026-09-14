@@ -89,10 +89,10 @@ class HealthManager
         if (! empty($context)) {
             ServiceFailed::dispatch(
                 key: $failedServicesNames,
-                title: 'Service Alert',
-                message: 'Following services are down:',
+                title: Config::string('health-manager.event.title'),
+                message: Config::string('health-manager.event.message'),
                 context: $context,
-                level: 'error',
+                level: Config::string('health-manager.event.level'),
             );
         }
     }
