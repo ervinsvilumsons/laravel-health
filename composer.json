@@ -41,7 +41,7 @@
     },
     "scripts": {
         "prepare": "@php vendor/bin/testbench package:discover --ansi",
-        "analyse": "@php vendor/bin/phpstan analyse src tests --level=10",
+        "analyse": "@php vendor/bin/phpstan analyse",
         "format": "@php vendor/bin/pint",
         "format:test": "@php vendor/bin/pint --test",
         "refactor": "@php vendor/bin/rector",
