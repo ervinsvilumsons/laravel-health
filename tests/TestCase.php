@@ -16,7 +16,7 @@ abstract class TestCase extends OrchestraTestCase
 
         $config->set(
             'health-manager.throttle.path',
-            storage_path("framework/health-rate-limit-test-{$token}"),
+            storage_path("framework/cache/health-rate-limit-test-{$token}"),
         );
     }
 
