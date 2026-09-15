@@ -192,12 +192,14 @@ class HandleFailedService
 {
     public function handle(ServiceFailed $event): void
     {
-        Log::error('Health check failed', [
-            'title' => $event->title,
-            'message' => $event->message,
-            'context' => $event->context,
-            'level' => $event->level,
-        ]);
+        dispatch(function () use ($event) {
+            Log::error('Health check failed', [
+                'title' => $event->title,
+                'message' => $event->message,
+                'context' => $event->context,
+                'level' => $event->level,
+            ]);
+        })->afterResponse();
     }
 }
 ```
