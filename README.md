@@ -10,6 +10,15 @@
 Laravel Health provides a JSON health-check endpoint for Laravel applications. Built-in checks cover cache, database, mail, queue, and Redis connections. 
 Checks run concurrently and each service reports `up`, `skipped` or `down` with its response time.
 
+## 📋 Requirements
+
+ReactPHP for asynchronous checks:
+- [`react/async`](https://github.com/reactphp/async)
+- [`react/promise`](https://github.com/reactphp/promise)
+- [`react/socket`](https://github.com/reactphp/socket)
+
+These dependencies are installed automatically via Composer.
+
 ## 📦 Installation
 
 ```bash
@@ -87,7 +96,7 @@ return [
     'throttle' => [
         'max_attempts' => 30,
         'decay_seconds' => 60,
-        'path' => storage_path('framework/health-rate-limit'),
+        'path' => storage_path('framework/cache/health-rate-limit'),
     ],
 
     'event' => [
@@ -192,12 +201,14 @@ class HandleFailedService
 {
     public function handle(ServiceFailed $event): void
     {
-        Log::error('Health check failed', [
-            'title' => $event->title,
-            'message' => $event->message,
-            'context' => $event->context,
-            'level' => $event->level,
-        ]);
+        dispatch(function () use ($event) {
+            Log::error('Health check failed', [
+                'title' => $event->title,
+                'message' => $event->message,
+                'context' => $event->context,
+                'level' => $event->level,
+            ]);
+        })->afterResponse();
     }
 }
 ```
@@ -210,7 +221,7 @@ The health endpoint is rate limited per client IP by default. Limits are configu
 'throttle' => [
     'max_attempts' => 30,
     'decay_seconds' => 60,
-    'path' => storage_path('framework/health-rate-limit'),
+    'path' => storage_path('framework/cache/health-rate-limit'),
 ],
 ```
 
@@ -219,7 +230,7 @@ The health endpoint is rate limited per client IP by default. Limits are configu
 | max_attempts | Maximum number of requests allowed within the decay window. |
 | decay_seconds | Length of the rate-limit window, in seconds. |
 
-State is stored as JSON files under `storage/framework/health-rate-limit/` — one file per hashed key. No cache or database table is required, so the limiter works even when the cache backend itself is unhealthy.
+State is stored as JSON files under `storage/framework/cache/health-rate-limit/` — one file per hashed key. No cache or database table is required, so the limiter works even when the cache backend itself is unhealthy.
 
 When a client exceeds the limit, the endpoint returns `429 Too Many Requests` with a `Retry-After` header indicating how many seconds remain until the window resets.
 

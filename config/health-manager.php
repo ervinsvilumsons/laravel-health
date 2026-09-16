@@ -16,7 +16,7 @@ return [
     'throttle' => [
         'max_attempts' => 30,
         'decay_seconds' => 60,
-        'path' => storage_path('framework/health-rate-limit'),
+        'path' => storage_path('framework/cache/health-rate-limit'),
     ],
 
     'event' => [

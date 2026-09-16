@@ -8,6 +8,8 @@ class HandleFailedService
 {
     public function handle(ServiceFailed $event): void
     {
-        //
+        dispatch(function () use ($event) {
+            //
+        })->afterResponse();
     }
 }
