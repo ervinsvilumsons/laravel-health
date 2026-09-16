@@ -21,7 +21,12 @@ final readonly class Throttle
 
         if (! $this->rateLimiter->attempt($key)) {
             return response()->json([
-                'message' => 'Too Many Requests',
+                'errors' => [
+                    [
+                        'status' => (string) Response::HTTP_TOO_MANY_REQUESTS,
+                        'title' => 'Too Many Requests',
+                    ],
+                ],
             ], Response::HTTP_TOO_MANY_REQUESTS, [
                 'Retry-After' => (string) $this->rateLimiter->retryAfter($key),
             ]);

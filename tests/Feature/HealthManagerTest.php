@@ -184,9 +184,13 @@ class HealthManagerTest extends TestCase
         $this->getJson($this->path)->assertOk();
 
         $this->getJson($this->path)
+            ->dump()
             ->assertStatus(Response::HTTP_TOO_MANY_REQUESTS)
             ->assertJson([
-                'message' => 'Too Many Requests',
+                'errors' => [[
+                    'status' => '429',
+                    'title' => 'Too Many Requests',
+                ]],
             ]);
     }
 }
