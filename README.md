@@ -3,10 +3,14 @@
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/ervinsvilumsons/laravel-health.svg?style=flat-square)](https://packagist.org/packages/ervinsvilumsons/laravel-health)
 ![PHP 8.4+](https://img.shields.io/badge/PHP-8.4%2B-777BB4?logo=php)
 ![Laravel 11+](https://img.shields.io/badge/Laravel-11%2B-FF2D20?logo=laravel&logoColor=white)
+[![License](https://img.shields.io/github/license/ervinsvilumsons/laravel-health)](https://github.com/ervinsvilumsons/laravel-health/blob/main/LICENSE)
+
 [![Tests](https://github.com/ervinsvilumsons/laravel-health/actions/workflows/ci.yml/badge.svg)](https://github.com/ervinsvilumsons/laravel-health/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/github/ervinsvilumsons/laravel-health/branch/staging/graph/badge.svg?token=0F2HQQXZH2)](https://codecov.io/github/ervinsvilumsons/laravel-health)
 [![Quality](https://sonarcloud.io/api/project_badges/measure?project=ervinsvilumsons_laravel-health&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=ervinsvilumsons_laravel-health)
-[![License](https://img.shields.io/github/license/ervinsvilumsons/laravel-health)](https://github.com/ervinsvilumsons/laravel-health/blob/main/LICENSE)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fervinsvilumsons%2Flaravel-health.svg?type=shield&issueType=license)](https://app.fossa.com/projects/git%2Bgithub.com%2Fervinsvilumsons%2Flaravel-health?ref=badge_shield&issueType=license)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fervinsvilumsons%2Flaravel-health.svg?type=shield&issueType=security)](https://app.fossa.com/projects/git%2Bgithub.com%2Fervinsvilumsons%2Flaravel-health?ref=badge_shield&issueType=security)
+
 
 Laravel Health provides a JSON health-check endpoint for Laravel applications. Built-in checks cover cache, database, mail, queue, and Redis connections. 
 Checks run concurrently and each service reports `up`, `skipped` or `down` with its response time.
