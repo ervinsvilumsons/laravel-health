@@ -27,7 +27,7 @@ jobs:
         run: | 
           set -euo pipefail
 
-          git fetch origin main master --quiet
+          git fetch origin main --quiet
 
           if git show-ref --verify --quiet refs/remotes/origin/main; then 
             if [ "$(git rev-parse HEAD)" = "$(git rev-parse origin/main)" ]; then 
