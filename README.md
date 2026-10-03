@@ -1,6 +1,7 @@
 # Laravel Health Manager
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/ervinsvilumsons/laravel-health.svg?style=flat-square)](https://packagist.org/packages/ervinsvilumsons/laravel-health)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/ervinsvilumsons/laravel-health.svg?style=flat-square)](https://packagist.org/packages/ervinsvilumsons/laravel-health)[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fervinsvilumsons%2Flaravel-health.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fervinsvilumsons%2Flaravel-health?ref=badge_shield)
+
 ![PHP 8.4+](https://img.shields.io/badge/PHP-8.4%2B-777BB4?logo=php)
 ![Laravel 11+](https://img.shields.io/badge/Laravel-11%2B-FF2D20?logo=laravel&logoColor=white)
 [![Tests](https://github.com/ervinsvilumsons/laravel-health/actions/workflows/ci.yml/badge.svg)](https://github.com/ervinsvilumsons/laravel-health/actions/workflows/ci.yml)
@@ -266,3 +267,6 @@ If you prefer to control the schedule yourself, disable it in config/health-mana
 ## ⚖️ License
 
 Laravel Health Manager is released under the [MIT License](LICENSE).
+
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fervinsvilumsons%2Flaravel-health.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fervinsvilumsons%2Flaravel-health?ref=badge_large)
